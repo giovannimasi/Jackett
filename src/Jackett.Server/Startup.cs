@@ -31,6 +31,7 @@ namespace Jackett.Server
     public class Startup
     {
         private const string AllowAllOrigins = "AllowAllOrigins";
+        private static Process flareProcess = new Process();
 
         public Startup(IConfiguration configuration) => Configuration = configuration;
 
@@ -154,6 +155,12 @@ namespace Jackett.Server
 #else
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
+            {
+                flareProcess.StartInfo.FileName = $"C:\\Program Files\\flaresolverr\\flaresolverr.exe";
+                flareProcess.StartInfo.CreateNoWindow = false;
+                flareProcess.StartInfo.UseShellExecute = false;
+                flareProcess.Start();
+            }
             applicationLifetime.ApplicationStarted.Register(OnStarted);
             applicationLifetime.ApplicationStopped.Register(OnStopped);
             Helper.applicationLifetime = applicationLifetime;
@@ -204,6 +211,9 @@ namespace Jackett.Server
             Helper.Logger.Info($"Jackett startup finished in {elapsed:0.000} s");
         }
 
-        private static void OnStopped() => Helper.Logger.Info($"Jackett stopped");
+        private static void OnStopped() {
+            Helper.Logger.Info($"Jackett stopped");
+            flareProcess.Close();
+        }
     }
 }
